@@ -1,16 +1,9 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "sqlite"
-  // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-  // Further reading:
-  // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-  // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
   url      = env("DATABASE_URL")
 }
 
@@ -48,13 +41,16 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String       @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?      @unique
   emailVerified DateTime?
   image         String?
+  phone         String?
+  password      String?
   accounts      Account[]
   sessions      Session[]
+  Attendance    Attendance[]
 }
 
 model VerificationToken {
@@ -63,4 +59,50 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// Necessary for time and attendance system
+model Company {
+  id         String       @id @default(cuid())
+  name       String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Attendance Attendance[]
+}
+
+model Project {
+  id         String       @id @default(cuid())
+  name       String
+  categories Category[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Attendance Attendance[]
+}
+
+model Category {
+  id         String       @id @default(cuid())
+  name       String
+  project    Project      @relation(fields: [projectId], references: [id])
+  projectId  String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Attendance Attendance[]
+}
+
+model Attendance {
+  id         String   @id @default(cuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  company    Company  @relation(fields: [companyId], references: [id])
+  companyId  String
+  project    Project  @relation(fields: [projectId], references: [id])
+  projectId  String
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
+  date       DateTime
+  clockIn    String
+  clockOut   String
+  status     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
