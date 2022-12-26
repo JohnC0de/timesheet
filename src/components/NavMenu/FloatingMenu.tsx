@@ -1,6 +1,6 @@
-import React, { useRef } from "react";
-import { SlideMenu } from "primereact/slidemenu";
 import { Button } from "primereact/button";
+import { SlideMenu } from "primereact/slidemenu";
+import { useRef } from "react";
 
 export const FloatingMenu = () => {
   const menu = useRef(null);
@@ -10,8 +10,12 @@ export const FloatingMenu = () => {
       icon: "pi pi-fw pi-file",
       items: [
         {
-          label: "Novo",
+          label: "Criar",
           icon: "pi pi-fw pi-plus",
+        },
+        {
+          label: "Avaliar",
+          icon: "pi pi-fw pi-check",
         },
       ],
     },
