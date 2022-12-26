@@ -8,6 +8,7 @@ import { Password } from "primereact/password";
 import { classNames } from "primereact/utils";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { trpc } from "../utils/trpc";
 
 type RegisterFormData = {
   name: string;
@@ -26,15 +27,29 @@ const RegisterPage: NextPage = () => {
   const {
     control,
     formState: { errors },
+    setError,
     handleSubmit,
     reset,
   } = useForm<RegisterFormData>();
 
+  const userCreate = trpc.user.register.useMutation({
+    onSuccess: () => {
+      console.log("Success");
+      setShowMessage(true);
+      reset();
+    },
+    onError: (error) => {
+      // set form field error messages
+      if (error.message === "Email already exists") {
+        setError("email", { type: "manual", message: error.message });
+      }
+    },
+  });
+
   const onSubmit = (data: RegisterFormData) => {
     setFormData(data);
-    setShowMessage(true);
     // TODO: Send user data to be registered in the database with trpc
-    reset();
+    userCreate.mutate(data);
   };
 
   const getFormErrorMessage = (name: keyof RegisterFormData) => {
@@ -191,6 +206,7 @@ const RegisterPage: NextPage = () => {
                 className="text-lg font-semibold"
                 type="submit"
                 label="Submit"
+                disabled={userCreate.isLoading}
               />
             </form>
           </div>
