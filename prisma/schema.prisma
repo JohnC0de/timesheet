@@ -7,12 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Example {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 // Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
@@ -51,6 +45,8 @@ model User {
   accounts      Account[]
   sessions      Session[]
   Attendance    Attendance[]
+  Role          Role         @relation(fields: [roleName], references: [name])
+  roleName      String       @default("EMPLOYEE")
 }
 
 model VerificationToken {
@@ -59,6 +55,15 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  User        User[]
 }
 
 // Necessary for time and attendance system
