@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client"
+import { hash } from "argon2"
 const prisma = new PrismaClient()
 async function main() {
   const roles = ["EMPLOYEE", "MANAGER", "ADMIN"]
@@ -8,7 +9,7 @@ async function main() {
   const defaultUser = {
     name: "John Doe",
     email: "johndoe@email.com",
-    password: "johndoedoe"
+    password: await hash("johndoedoe")
   }
   await prisma.user.create({ data: defaultUser })
 

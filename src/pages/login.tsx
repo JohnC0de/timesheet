@@ -5,52 +5,27 @@ import { Divider } from "primereact/divider"
 import { InputText } from "primereact/inputtext"
 import { Password } from "primereact/password"
 import { classNames } from "primereact/utils"
-import { useState } from "react"
 import { Controller, useForm } from "react-hook-form"
-import { SuccessDialog } from "../components/Register/SuccessDialog"
-import { trpc } from "../utils/trpc"
 
-export type RegisterFormData = {
-  name: string
+export type LoginFormData = {
   email: string
   password: string
 }
 
-const RegisterPage: NextPage = () => {
-  const [showMessage, setShowMessage] = useState(false)
-  const [formData, setFormData] = useState<RegisterFormData>({
-    name: "",
-    email: "",
-    password: ""
-  })
-
+const LoginPage: NextPage = () => {
   const {
     control,
     formState: { errors },
     setError,
     handleSubmit,
     reset
-  } = useForm<RegisterFormData>()
+  } = useForm<LoginFormData>()
 
-  const userCreate = trpc.user.register.useMutation({
-    onSuccess: () => {
-      console.log("Success")
-      setShowMessage(true)
-      reset()
-    },
-    onError: error => {
-      if (error.message === "Email already exists") {
-        setError("email", { type: "manual", message: error.message })
-      }
-    }
-  })
-
-  const onSubmit = (data: RegisterFormData) => {
-    setFormData(data)
-    userCreate.mutate(data)
+  const onSubmit = (data: LoginFormData) => {
+    console.log(data)
   }
 
-  const getFormErrorMessage = (name: keyof RegisterFormData) => {
+  const getFormErrorMessage = (name: keyof LoginFormData) => {
     return errors[name] && <small className="p-error">{errors[name]?.message}</small>
   }
 
@@ -69,37 +44,13 @@ const RegisterPage: NextPage = () => {
 
   return (
     <div className="rounded-lg border p-4 shadow-2xl">
-      <SuccessDialog formData={formData} showMessage={showMessage} setShowMessage={setShowMessage} />
       <div className="mb-6 grid grid-cols-3 items-center gap-4">
-        <Link href="/login">
+        <Link href="/register">
           <Button icon="pi pi-arrow-left" className="p-button-text" />
         </Link>
-        <h5 className="justify-self-center text-xl font-semibold">Register</h5>
+        <h5 className="justify-self-center text-xl font-semibold">Login</h5>
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="p-fluid flex flex-col gap-8">
-        <div>
-          <span className="p-float-label p-input-icon-right">
-            <i className="pi pi-user" />
-            <Controller
-              name="name"
-              control={control}
-              rules={{ required: "Name is required." }}
-              render={({ field, fieldState }) => (
-                <InputText
-                  id={field.name}
-                  {...field}
-                  autoFocus
-                  className={classNames({ "p-invalid": fieldState.error })}
-                />
-              )}
-            />
-            <label htmlFor="name" className={classNames({ "p-error": errors.name })}>
-              Name*
-            </label>
-          </span>
-          {getFormErrorMessage("name")}
-        </div>
-
         <div>
           <span className="p-float-label p-input-icon-right">
             <i className="pi pi-envelope" />
@@ -147,14 +98,15 @@ const RegisterPage: NextPage = () => {
           </span>
           {getFormErrorMessage("password")}
         </div>
-        <Button type="submit" label="Submit" icon="pi pi-user-plus" iconPos="right" disabled={userCreate.isLoading} />
+        {/* Change text style inside button */}
+        <Button type="submit" label="Login" icon="pi pi-sign-in" iconPos="right" />
       </form>
       <Divider />
-      <Link href="/login">
-        <Button className="p-button-text">Already have an account? Click here to login.</Button>
+      <Link href="/register">
+        <Button className="p-button-text">Doesn&apos;t have an account yet? Sign up here!</Button>
       </Link>
     </div>
   )
 }
 
-export default RegisterPage
+export default LoginPage

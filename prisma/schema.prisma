@@ -44,9 +44,9 @@ model User {
   password      String
   accounts      Account[]
   sessions      Session[]
-  Attendance    Attendance[]
-  Role          Role         @relation(fields: [roleName], references: [name])
-  roleName      String       @default("EMPLOYEE")
+  attendance    Attendance[]
+  Role          Role         @relation(fields: [role], references: [name])
+  role          String       @default("EMPLOYEE")
 }
 
 model VerificationToken {

@@ -11,9 +11,11 @@ import "primeicons/primeicons.css"
 
 const MyApp: AppType<{ session: Session | null }> = ({ Component, pageProps: { session, ...pageProps } }) => {
   return (
-    <SessionProvider session={session}>
-      <Component {...pageProps} />
-    </SessionProvider>
+    <main className="flex min-h-screen flex-col items-center justify-center bg-gray-900">
+      <SessionProvider session={session}>
+        <Component {...pageProps} />
+      </SessionProvider>
+    </main>
   )
 }
 
